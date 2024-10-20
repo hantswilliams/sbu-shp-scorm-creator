@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Your Course Title</title>
+    <!-- Reveal.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <!-- Reveal.js Markdown Plugin -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/markdown/markdown.min.js"></script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            margin: 0;
+        }
+        #sidebar {
+            min-width: 200px;
+            background-color: #f7fafc; /* Tailwind gray-100 */
+            padding: 1rem;
+            overflow-y: auto;
+        }
+        #content {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .reveal {
+            height: 100vh;
+        }
+    </style>
+    <script type="text/javascript">
+        // SCORM API Wrapper
+        var scorm = {
+            api: null,
+            initialized: false,
+            findAPI: function(win) {
+                var attempts = 0;
+                while ((win.API == null) && (win.parent != null) && (win.parent != win)) {
+                    attempts++;
+                    if (attempts > 7) return null; // Prevent infinite loop
+                    win = win.parent;
+                }
+                return win.API;
+            },
+            init: function() {
+                this.api = this.findAPI(window);
+                if (this.api == null) {
+                    console.log("SCORM API not found.");
+                    return false;
+                }
+                var result = this.api.LMSInitialize("");
+                if (result.toString() != "true") {
+                    console.log("LMS Initialize failed.");
+                    return false;
+                }
+                this.initialized = true;
+                return true;
+            },
+            finish: function() {
+                if (this.initialized) {
+                    var result = this.api.LMSFinish("");
+                    if (result.toString() != "true") {
+                        console.log("LMS Finish failed.");
+                        return false;
+                    }
+                }
+                return true;
+            },
+            setValue: function(name, value) {
+                if (this.initialized) {
+                    var result = this.api.LMSSetValue(name, value);
+                    if (result.toString() != "true") {
+                        console.log("LMS SetValue failed: " + name + " = " + value);
+                    }
+                }
+            },
+            getValue: function(name) {
+                if (this.initialized) {
+                    return this.api.LMSGetValue(name);
+                }
+                return "";
+            },
+            commit: function() {
+                if (this.initialized) {
+                    var result = this.api.LMSCommit("");
+                    if (result.toString() != "true") {
+                        console.log("LMS Commit failed.");
+                    }
+                }
+            }
+        };
+
+        var totalSlides;
+        function updateProgress() {
+            if (!scorm.initialized) return; // Exit if SCORM is not initialized
+
+            var indices = Reveal.getIndices();
+            var currentSlide = indices.h;
+            var progress = ((currentSlide + 1) / totalSlides) * 100;
+            scorm.setValue("cmi.core.lesson_location", currentSlide.toString());
+            scorm.setValue("cmi.core.lesson_status", "incomplete");
+            scorm.setValue("cmi.core.score.raw", progress.toFixed(2));
+            scorm.commit();
+        }
+
+        // Initialize SCORM and Reveal.js on page load
+        window.onload = function() {
+            if (scorm.init()) {
+                var savedLocation = scorm.getValue("cmi.core.lesson_location");
+                Reveal.initialize({
+                    hash: true,
+                    plugins: [ RevealMarkdown ],
+                    markdown: {
+                        // Customize options if needed
+                    }
+                });
+                totalSlides = Reveal.getTotalSlides();
+                if (savedLocation) {
+                    Reveal.slide(Number(savedLocation));
+                }
+                scorm.setValue("cmi.core.lesson_status", "incomplete");
+                scorm.commit();
+                updateProgress();
+            } else {
+                // Initialize Reveal.js even if SCORM is not initialized
+                Reveal.initialize({
+                    hash: true,
+                    plugins: [ RevealMarkdown ],
+                    markdown: {
+                        // Customize options if needed
+                    }
+                });
+                totalSlides = Reveal.getTotalSlides();
+                updateProgress();
+            }
+        };
+
+        // Update progress on slide change
+        Reveal.on('slidechanged', function(event) {
+            updateProgress();
+        });
+
+        // Finish SCORM on page unload
+        window.onunload = window.onbeforeunload = function() {
+            if (scorm.initialized) {
+                scorm.setValue("cmi.core.lesson_status", "completed");
+                scorm.commit();
+                scorm.finish();
+            }
+        };
+    </script>
+</head>
+<body>
+    <div id="sidebar">
+        <ul class="space-y-2"><li class="ml-0"><a href="#/0" class="text-blue-500 hover:underline">Welcome to Your First Lesson</a></li><li class="ml-4"><a href="#/1" class="text-blue-500 hover:underline">Topic 1: Introduction to SCORM</a></li><li class="ml-4"><a href="#/2" class="text-blue-500 hover:underline">Topic 2: Creating Content</a></li><li class="ml-4"><a href="#/3" class="text-blue-500 hover:underline">Topic 3: Packaging and Deployment</a></li><li class="ml-0"><a href="#/4" class="text-blue-500 hover:underline">Thank You for Participating!</a></li></ul>
+    </div>
+    <div id="content">
+        <div class="reveal">
+            <div class="slides">
+                <section data-markdown data-separator="^---$" data-separator-notes="^Note:">
+                    <textarea data-template>
+# Welcome to Your First Lesson
+
+This is an example of a simple SCORM package created from Markdown.
+
+---
+
+## Topic 1: Introduction to SCORM
+
+- What is SCORM?
+- SCORM Versions
+- SCORM in e-Learning
+
+---
+
+## Topic 2: Creating Content
+
+- Authoring Tools
+- Content Structuring
+- Best Practices
+
+---
+
+## Topic 3: Packaging and Deployment
+
+- imsmanifest.xml
+- Packaging Tools
+- Deployment Strategies
+
+---
+
+# Thank You for Participating!
+
+Feel free to revisit any section.
+
+                    </textarea>
+                </section>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
