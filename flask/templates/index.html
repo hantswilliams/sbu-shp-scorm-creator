@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Markdown Slide Editor</title>
+    <!-- Include Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Include necessary CSS files -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.6/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.6/theme/monokai.min.css">
+    <!-- Include Reveal.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css">
+    <!-- Include Reveal.js Theme -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css">
+    <!-- Custom Styles -->
+    <style>
+        body {
+            margin: 0;
+        }
+        #editor, #preview {
+            height: 100vh;
+            overflow: auto;
+        }
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+    <div id="editor" class="w-1/2 border-r border-gray-300"></div>
+    <div id="preview" class="w-1/2">
+        <div class="reveal">
+            <div class="slides"></div>
+        </div>
+    </div>
+    <div id="toolbar" class="flex space-x-2 absolute top-2 right-2">
+        <button id="uploadBtn" class="bg-blue-500 text-white px-4 py-2 rounded">Upload Markdown</button>
+        <input type="file" id="fileInput" accept=".md">
+        <button id="downloadBtn" class="bg-green-500 text-white px-4 py-2 rounded">Download Markdown</button>
+        <button id="fullscreenBtn" class="bg-gray-500 text-white px-4 py-2 rounded">Fullscreen Preview</button>
+        <input type="color" id="bgColorPicker" value="#ffffff" class="border border-gray-300 px-2 py-2 rounded">
+        <button id="updatePreviewBtn" class="bg-purple-500 text-white px-4 py-2 rounded">Update Preview</button>
+        <button id="generateScormBtn" class="bg-red-500 text-white px-4 py-2 rounded">Generate SCORM Package</button>
+    </div>
+
+    <!-- Include necessary JS files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.6/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.6/mode/markdown/markdown.min.js"></script>
+    <!-- Additional CodeMirror modes if needed -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/markdown/markdown.min.js"></script>
+    <!-- Your custom script -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
+
+
+
